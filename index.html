@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width" />
+        <title>Very simple WebRTC application with a Node.js signalling server</title>
+    </head>
+    <body>
+        <div id="mainDiv">
+            <table border="1" width="100%">
+                <tr>
+                    <th>Local video</th>
+                    <th>Remote video</th>
+                </tr>
+                <tr>
+                    <td><video id="localVideo" autoplay></video></td>
+                    <td><video id="remoteVideo" autoplay></video></td>
+                </tr>
+                <tr>
+                    <td align="center">
+                        <textarea id="dataChannelSend" cols="60" rows="4" disabled 
+                            placeholder="This will be enabled once the data channel is up"></textarea>
+                    </td>
+                    <td align="center">
+                        <textarea id="dataChannelReceive" cols="60" rows="4" disabled></textarea>
+                    </td>
+                </tr>
+                <td align="center">
+                    <button id="sendButton" disabled>Send</button>
+                </td>
+                <td></td>
+            </table>
+        </div>
+        <script src="/socket.io/socket.io.js"></script>
+        <!-- <script src="js/lib/adapter.js"></script> -->
+        <script src="privateChat.js"></script>
+    </body>
+</html>
