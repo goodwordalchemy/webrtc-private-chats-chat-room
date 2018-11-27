@@ -25,6 +25,15 @@ io.on("connection", function(socket){
     // chat room functionality
     socket.emit('recent messages', recent_messages);
 
+    socket.on("chat invite", (invite) => {
+        console.log("got chat invite message");
+        io.emit("chat invite", invite);
+    });
+
+    socket.on("chat invite response", (response) => {
+        io.emit("chat invite response", response);
+    });
+
     socket.on('chat message', function(msg){
         msg_obj = {
             username: msg.username, content: msg.content
@@ -36,8 +45,6 @@ io.on("connection", function(socket){
         if (recent_messages.length > num_recent_messages) {
             recent_messages.shift();
         }
-
-
     });
 
     // webRTC functionality
