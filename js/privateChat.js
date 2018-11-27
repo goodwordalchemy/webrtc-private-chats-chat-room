@@ -1,5 +1,8 @@
 'use strict';
 
+const urlParams = new URLSearchParams(window.location.search);
+const room = urlParams.get('initiator');
+
 window.onbeforeunload = function(e){ hangup(); }
 
 // State variables
@@ -34,7 +37,7 @@ let remoteVideo = document.getElementById("remoteVideo");
 
 sendButton.onclick = sendData;
 
-var room = prompt("Enter room name:");
+// var room = prompt("Enter room name:");
 
 var socket = io();
 

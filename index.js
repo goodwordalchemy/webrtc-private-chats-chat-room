@@ -1,19 +1,46 @@
 var express = require('express')
 var app = express();
 var http = require("http").Server(app);
-var io = require("socket.io").listen(http);
+var io = require("socket.io")(http);
 
-http.listen(3000, function (){
-    console.log("listening on *:3000");
-});
+const num_recent_messages = 30;
+var recent_messages = [];
 
 app.use(express.static('js'));
-
 app.get('/', function (req, res){
     res.sendFile(__dirname + "/index.html");
 });
+app.get('/private-chat', function(req, res){
+    console.log("request for private chat");
+    res.sendFile(__dirname + '/private-chat.html');
+});
 
 io.on("connection", function(socket){
+    console.log("user connected");
+
+    socket.on("disconnect", function (){
+        console.log("user disconnected");
+    }); 
+
+    // chat room functionality
+    socket.emit('recent messages', recent_messages);
+
+    socket.on('chat message', function(msg){
+        msg_obj = {
+            username: msg.username, content: msg.content
+        };
+
+        io.emit('chat message', msg_obj);
+        recent_messages.push(msg_obj);
+        
+        if (recent_messages.length > num_recent_messages) {
+            recent_messages.shift();
+        }
+
+
+    });
+
+    // webRTC functionality
     socket.on("message", function (message){
         log("S --> got message: ", message);
         socket.broadcast.to(message.channel).emit("message", message.message);
@@ -42,10 +69,12 @@ io.on("connection", function(socket){
     function log(){
         var array = [">>> "];
 
-        for (var i = 0, len = arguments.length; i < len; i++) {
-            array.push(arguments[i]);
-        }
+        array.push.apply(array, arguments);
 
         socket.emit("log", array);
     }
+});
+
+http.listen(3000, function (){
+    console.log("listening on *:3000");
 });
