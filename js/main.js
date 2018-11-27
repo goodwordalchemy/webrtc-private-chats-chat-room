@@ -1,42 +1,47 @@
-console.log("loaded new main");
-      function renderMessage(msg) {
-          let link = "/private-chat";
+var USERNAME;
+
+var socket = io();
+
+function renderMessage(msg) {
+    let link = `/private-chat?initiator=${msg.username}`;
+
+    $('#messages').append(
+        $('<li/>').append(
+            $('<a/>')
+            .attr('href', link)
+            .text(`${msg.username}`))
+        .text(`${msg.content}`));
+}
 
 
-          $('#messages').append(
-              $(`<li><a class="privateChatLink" href="${link}?initiator=${msg.username}">${msg.username}</a>: ${msg.content}</li>`)
-          );
-      }
 
-      var USERNAME;
 
-      $(function () {
-        var socket = io();
-        $("#messages").on("click", function(evt){
-            console.log("clicked!", evt.target);
-        });
+$(function () {
+    $("#messages").on("click", function(evt){
+        console.log("clicked!", evt.target);
+    });
 
-        $('form').submit(function(){
-            if (USERNAME) {
-                socket.emit('chat message', {content: $('#m').val(), username: USERNAME});
-              $('#m').val('');
+    $('form').submit(function(){
+        if (USERNAME) {
+            socket.emit('chat message', {content: $('#m').val(), username: USERNAME});
+            $('#m').val('');
+        } else {
+            if ($('#m').val() === '') {
             } else {
-                if ($('#m').val() === '') {
-                } else {
-                    USERNAME = $('#m').val();
-                    $('#b').text("Send");
-                     $('#m').val('')
-                }
+                USERNAME = $('#m').val();
+                $('#b').text("Send");
+                $('#m').val('')
             }
-            return false;
-        });
+        }
+        return false;
+    });
 
-        socket.on('recent messages', function(msgs){
-            msgs.map(renderMessage);
-        });
+    socket.on('recent messages', function(msgs){
+        msgs.map(renderMessage);
+    });
 
-        socket.on('chat message', function(msg){
-          renderMessage(msg);
-          window.scrollTo(0, document.body.scrollHeight);
-        });
-      });
+    socket.on('chat message', function(msg){
+        renderMessage(msg);
+        window.scrollTo(0, document.body.scrollHeight);
+    });
+});
